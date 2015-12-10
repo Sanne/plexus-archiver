@@ -119,8 +119,7 @@ public abstract class AbstractZipArchiver
      * Java versions from 8 and up round timestamp up.
      * s
      */
-    private static final boolean isJava7OrLower =
-        Integer.parseInt( System.getProperty( "java.version" ).split( "\\." )[1] ) <= 7;
+    private static final boolean isJava7OrLower = isJava7OrLower();
 
     // Renamed version of original file, if it exists
     private File renamedFile = null;
@@ -805,6 +804,18 @@ public abstract class AbstractZipArchiver
     protected String getArchiveType()
     {
         return archiveType;
+    }
+
+    private static boolean isJava7OrLower() {
+       String[] split = System.getProperty( "java.version" ).split( "\\." );
+       if ( split.length < 2 ) {
+          //The format of the pattern changed in Java 9, so if there are no dots it's Java 9 at least.
+          //See: http://openjdk.java.net/jeps/223
+          return false;
+       }
+       else {
+          return "1".equals( split[0] ) && Integer.parseInt( split[1] ) <= 7;
+       }
     }
 
 }
